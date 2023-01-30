@@ -1,0 +1,80 @@
+
+{%extends 'base.html'%}
+{%load static%}
+
+{%block content%}
+<style>
+input{
+    width:100%;
+    height:1cm;
+}
+</style>
+<div class='container'> 
+    <div class='ro'>
+    <div class='box' style='border:none;'>
+         
+        <div class='bx'>
+            <p>
+                <h2 style='' class='pcolor'>
+              
+                SignUp
+                
+                </h2>
+            <p>
+             <br>
+                
+                
+                
+            <form method='post'>
+                {%csrf_token%}
+                        
+                            {%if form.errors %}
+                            <p>Invalid Username or Password</p>
+                            {%endif%}
+                        
+                    
+                    
+                    {% for field in form %}
+                         <div class='row'>
+    
+                             {{field.errors}}
+                             <div class='col-12 col-md-6'>
+                             {%if field.label == 'E-mail (optional)' %}
+                             {{ field.as_widget }} <i class='mesize'>Optional </i>
+                             {%else%}
+                              {{ field.as_widget }}
+                             {%endif%}
+                             </div>
+                         </div>
+                         <br />
+                    {% endfor %}
+                   
+                             
+                         <p>
+                    <p>
+                        <button class='button btn-block active col-md-6' style=''>
+                            Next
+                        </button>
+                    </p>
+                    <p>
+                        
+                        
+                    </p>
+                    
+                    
+                     <hr> 
+                    <p class='mesize'>
+                        If You Already have an account 
+                        <a class='normal mesize' href='{% url 'account_login'%}' style='font-size:20px;baground-color:357417'>
+                                Login
+                            </a>
+                    </p>
+                </form>
+            </p>    
+    
+        </div>
+        
+ </div>
+    </div>
+</div>
+{%endblock%}

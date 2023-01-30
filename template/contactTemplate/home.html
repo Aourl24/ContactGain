@@ -1,0 +1,210 @@
+{%extends 'base.html'%}
+{%block content%}
+<style>
+input{
+  height:1.3cm;
+}
+
+#proof{
+  position:fixd;
+}
+</style>
+<div id='body'></div>
+<script type="text/babel">
+
+class HomePage extends React.Component{
+  constructor(props){
+    super(props);
+    this.state = {user:'{{contact.user.username|title}}',level:{{contact.level.level_number}},contacts:[], proof:{{level.proof}},completed:{{proof_count.count}}}
+}
+  delete(a){
+    var holder = this.state.contacts
+    holder.pop(a)
+    this.setState({contacts:holder})
+  }
+
+
+proof(){
+console.log(this.state.completed)
+console.log(this.state.proof)
+var percent = this.state.completed/this.state.proof
+var pp = percent * 100;
+console.log(pp + ' percent')
+console.log(pp)
+return Math.floor(pp)
+}
+
+  star(x){
+    var b = ''
+    for(var i=0;i<x;i++){
+      b += "<i class='fas fa-star pcolor'></i>"
+    }
+    return b;
+  }
+
+
+  render(){
+    return(
+    	<div>
+        <div class='container'>
+        <div class=''>
+        <h3 class=''> Welcome <span class=''> {this.state.user}</span> </h3>
+        {%verbatim%}
+        <p class='mesize scolor'>Level <span class=''> {this.state.level} <span dangerouslySetInnerHTML={{__html:this.star(this.state.level)}} />  </span></p>
+        </div>
+        <div class='box bg-ligh' style={{height:'1cm',width:'100%',padding:'0px',backgroundColor:'#d7d7d7'}}>
+        <div class='box center white pbcolor' style={{height:'1cm',width:this.proof()+'%',backgroundColor:'green',marginLeft:'0px',mrgin:'2px 2px auto'}}>
+        
+        {this.proof()}% completed
+        </div>
+      </div>
+        {%endverbatim%}
+        <p class='desize black'>Progress Bar </p>
+        <p><span class='bg-light padd mesize'>{{contact.proof.count}} proof uploaded <span class='sbcolor padd whte curve'> {{proof_count.count}}approved </span></span></p>
+        <hr />
+        <div>
+        <h5 class='pcolor'>Gain Whatsapp Contacts in 3 steps </h5>
+        <ol class='insize'>
+        <li>Click the share button to share the site link on your Whatsapp</li>
+        <li>Screenshot after you share it and click on upload proof </li>
+        <li>Wait till next sunday to receive your download Link </li>
+        </ol>
+        <hr />
+          <p class='cage bg-light padd'>
+            Contact are gained based on level you are;
+            <table class='table table-hover'>
+              <tr><td class='bold'>Level</td><td class='bold'>Contacts</td><td class='bold'>Share</td></tr>
+              {%for lev in levels%}
+              <tr>
+              <td>{{lev.level_number}} </td> <td> {{lev.maximum_contact}} </td> <td> {{lev.proof}} </td>
+            </tr>
+              {%endfor%}
+            </table>
+            <div class='mesize'> If you are currently in Level 0, you don't have access to any contact.Click the share button to begin</div>
+            <div class='mesize'> The more you share the link the more your Level increase </div>
+          </p>
+        </div>
+        
+        <div class='container'>
+        <div class='row'>
+        <div class='center col-md-6'>
+        <h3> <button class='white btn-success btn-block curve padd'><a href="whatsapp://send?text=http://127.0.0.1:8000/home/" data-action="share/whatsapp/share" target="_blank" class='white'> <i class='fab fa-whatsapp'></i> Share Link on Whatsapp</a></button></h3>
+        </div>
+        <div class='center col-md-6'>
+          <h3><button class='btn-danger btn-block padd curve' onClick={()=>$('#proof').toggle('show')}> Upload Proof </button></h3>
+        </div>
+      </div>
+      </div>
+        <hr />
+      
+        <div id='proof' class='hide'>
+          <Proof />
+        </div>
+      
+
+        <div class='insize'> Contact List </div>
+        <div class='passive'>These are the contacts you have gained </div>
+        <ContactList />
+        <br />
+        {%if download %}
+        <h3 class='box center'>
+          <p class='insize'> Your Contact File is Ready </p>
+        <button class='white curve border padd btn-warning'><a class='white' href="{{contact.synchronize}}" download ><i class='fas fa-download'></i> Click to Download Contact File</a></button>
+        </h3>
+        {%endif%}
+        </div>
+        </div>
+
+      )
+  }
+}
+
+class ContactList extends React.Component{
+  constructor(props){
+    super(props);
+    this.state = {contacts:[]}
+  }
+
+async componentDidMount(){
+
+  var j = await fetch('/contactapi/?format=json')
+  var m = await j.json()
+  this.setState({contacts:m})
+}
+
+hide(a){
+  var j= []
+  var x= a.toString().split('')
+  for(var i=0;i<x.length;i++){
+    if(i > 3){
+      j.push('*')
+    }
+    else{
+      j.push(x[i])
+    }
+  }
+  return j.join('')
+}
+title(a){
+   var j= []
+  var x= a.toString().split('')
+  for(var i=0;i<x.length;i++){
+    if(i < 1){
+      j.push(x[i].toUpperCase())
+    }
+    else{
+      j.push(x[i].toLowerCase())
+    }
+  }
+  return j.join('')
+}
+
+
+render(){
+  if(this.state.contacts.length > 1){
+  return(
+        <div class='box'>
+        {this.state.contacts.slice(0,20).map(x=>
+            <div class='box border curve'>
+            <div>Name : <span class=''>{this.title(x.user.username)}</span> <div> Phone : <span class=''>0{this.hide(x.phone)}</span> </div> </div>
+            </div>
+            
+        )}
+        {this.state.contacts.length > 20 ? <div class='center'>
+        and {this.state.contacts.length - 20 } others</div> : <div></div>}
+
+        </div>
+  )
+}
+else{
+  return(
+  <div> You have not gain any Contact, complete the task to gain contacts </div>
+  )
+}
+}
+}
+
+const Proof =()=>{
+  return(
+  <div>
+  <div class='container alert-success padd' id='proof'>
+    <div class='container padd'>
+      <h3 class='bold black'>Upload Screenshots </h3>
+    <form class='form-group padd' action="{%url 'ProofUrl' %}" method='Post' enctype='multipart/form-data'>
+      <input type='hidden' name='csrfmiddlewaretoken' value="{{csrf_token}}" />
+      <p><input class='form-control bg-light' type='file' name='file' multiple /></p>
+      <p class='help-block black'> Upload the screeshots that proof you have shared the link </p>
+      <button type='submit' class='btn-primary btn-block'> Submit </button>
+    </form>
+  </div>
+</div>
+</div>
+  )
+}
+var target = document.getElementById('body')
+ReactDOM.render(<HomePage />, target)
+
+
+
+</script>
+{%endblock%}

@@ -1,0 +1,25 @@
+{%extends 'base.html'%}
+{%block content %}
+<style>
+input{
+	width: 100%;
+}
+</style>
+<div class='container'>
+<h2 class='bold'> Add your Whatsapp Number </h2>
+<hr />
+<div class='row'>
+<form class='container form-group' method='POST'>
+<div class='insize'>Kindly Add your Whatsapp Number, make sure it is your whatsapp number because it is the number used for the contact gain </div>
+
+{%csrf_token%}
+<p>
+<div class='input-group'>
+<span class='label label-default'>+234</span><input type='tel' name='phonenumber' />
+</div>
+</p>
+<p><button type='submit' class='btn-success active btn-block curve'> Ok </button></p>
+</form>
+</div>
+</div>
+{%endblock%}
